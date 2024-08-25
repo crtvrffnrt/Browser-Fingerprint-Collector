@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello World</title>
     <script>
-        function collectAndSendData() {
+        function collectAndSendData(ipAddress) {
             // Get User-Agent string
             var userAgent = navigator.userAgent;
 
-            // Get screen resolution
-            var screenResolution = window.screen.width + "x" + window.screen.height;
+            // Get browser window resolution
+            var browserWidth = window.innerWidth || window.screen.width;
+            var browserHeight = window.innerHeight || window.screen.height;
+            var screenResBrowser = browserWidth + "x" + browserHeight;
+
+            // Get full monitor resolution
+            var monitorWidth = window.screen.width;
+            var monitorHeight = window.screen.height;
+            var screenResMonitor = monitorWidth + "x" + monitorHeight;
 
             // Get cookies
             var cookies = document.cookie;
@@ -50,14 +57,15 @@
 
             // Detect if on Mac (platform contains "Mac")
             var isRetina = window.devicePixelRatio > 1;
-            var hasTouchBar = screenResolution === "2170x60"; // Approximation, may vary by model
+            var hasTouchBar = screenResMonitor === "2170x60"; // Approximation, may vary by model
             var hasApplePay = window.ApplePaySession && ApplePaySession.canMakePayments();
             var isTrackpad = 'ontouchstart' in window;
 
             // Construct the new URL with all parameters
             var newUrl = "/Results/efil/" + 
                 "?user_agent=" + encodeURIComponent(userAgent) +
-                "&screen_resolution=" + encodeURIComponent(screenResolution) +
+                "&screen_res_browser=" + encodeURIComponent(screenResBrowser) +
+                "&screen_res_monitor=" + encodeURIComponent(screenResMonitor) +
                 "&cookies=" + encodeURIComponent(cookies) +
                 "&os_version=" + encodeURIComponent(osVersion) +
                 "&battery_status=not_supported" + // Placeholder for now, since not all browsers support Battery API
@@ -72,15 +80,28 @@
                 "&is_retina=" + encodeURIComponent(isRetina) +
                 "&has_touch_bar=" + encodeURIComponent(hasTouchBar) +
                 "&has_apple_pay=" + encodeURIComponent(hasApplePay) +
-                "&is_trackpad=" + encodeURIComponent(isTrackpad);
+                "&is_trackpad=" + encodeURIComponent(isTrackpad) +
+                "&ip_address_fromipinfo=" + encodeURIComponent(ipAddress);
 
             // Create a new Image object and set the source to the new URL
             var img = new Image();
             img.src = newUrl;
         }
 
-        // Delay the execution of the function by 2 seconds
-        setTimeout(collectAndSendData, 2000);
+        function getIpAndCollectData() {
+            fetch('https://ipinfo.io/ip')
+                .then(response => response.text())
+                .then(ipAddress => {
+                    setTimeout(() => collectAndSendData(ipAddress.trim()), 2000);
+                })
+                .catch(() => {
+                    // If fetching the IP fails, proceed without it
+                    setTimeout(() => collectAndSendData('unknown'), 2000);
+                });
+        }
+
+        // Start the process of getting IP and collecting data
+        getIpAndCollectData();
     </script>
 </head>
 <body>
