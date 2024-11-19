@@ -24,4 +24,5 @@ This repository contains a simple HTML page that collects detailed fingerprintin
    ```bash
    git clone https://github.com/crtvrffnrt/browser-fingerprint-collector.git
    cd browser-fingerprint-collector
-   python3 -m http.server 8080
+   python3 -m browsercatch.py 8080
+   ```
