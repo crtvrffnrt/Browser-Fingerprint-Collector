@@ -1,28 +1,98 @@
-# Browser Fingerprint Collector
+# Browser Fingerprint Collector (BrowserCatch)
 
-This repository contains a simple HTML page that collects detailed fingerprinting information from a visitor's browser and operating system. The collected data is sent to a specified server endpoint after a 2-second delay when the user visits the page. The script is designed to be compatible with major browsers across different operating systems.
+`browsercatch.py` is a lightweight collaborator-style inbound listener designed for authorized pentesting workflows.
 
-## Features
+It captures inbound HTTP callbacks (GET/POST/PUT/PATCH/DELETE/OPTIONS/HEAD), logs request details, and adds quick risk hints for possible SSRF, RCE-probe, CSRF, and XSS-beacon style traffic.
 
-- **Cross-Browser Compatibility:** Works with major browsers like Chrome, Firefox, Edge, Safari, etc.
-- **OS Agnostic:** Collects information across different operating systems including Windows, macOS, Linux, and more.
-- **Data Collection:** Gathers detailed information such as User-Agent, screen resolution, installed browser plugins, platform, language preference, timezone, hardware concurrency, device memory, connection type, touch support, and more.
-- **2-Second Delay:** A 2-second delay is introduced before the data collection starts to avoid detection and ensure the page loads smoothly for the user.
-- **Customizable Endpoint:** The data is sent to a customizable server endpoint (`/Results/efil/` by default).
+## What This Project Is For
+- Blind callback detection during web/API pentests
+- Alternative to external collaborator services when you want a local script
+- Easy integration with Gemini CLI skills/agents
 
-## How It Works
+## Key Capabilities
+- Multi-method inbound capture
+- Tokenized callback paths (`/c/<token>` by default)
+- Structured logs:
+  - JSONL event stream for automation
+  - Markdown summary with incremental run log
+- Built-in endpoints:
+  - `/health` for liveness
+  - `/events` for recent captured events
+- Optional HTML lure/template serving with placeholder replacement
+- Single-shot mode (`--once`) for automation jobs
 
-1. **HTML Page:** A simple "Hello World" HTML page with embedded JavaScript.
-2. **JavaScript Execution:** After a 2-second delay, the JavaScript collects various details about the user's browser and environment.
-3. **Data Transmission:** The collected data is sent via an image request to the specified server endpoint.
+## Quick Start
 
-## Usage
+```bash
+cd Browser-Fingerprint-Collector
+python3 browsercatch.py --port 8080
+```
 
-### Deploying the Page
+The script prints a callback URL like:
 
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/crtvrffnrt/browser-fingerprint-collector.git
-   cd browser-fingerprint-collector
-   python3 -m browsercatch.py 8080
-   ```
+```text
+http://127.0.0.1:8080/c/<token>
+```
+
+## CLI Usage
+
+```bash
+python3 browsercatch.py [flags]
+```
+
+### Common Flags
+- `--host 0.0.0.0` bind interface
+- `--port 8080` listener port
+- `--token abc123` fixed callback token (optional)
+- `--base-path /c` callback path prefix
+- `--public-url https://your-domain.tld` printed callback base for external targets
+- `--serve-file index.html` serve a custom HTML template at `/`
+- `--static-dir .` expose files under `/static/*`
+- `--stdout-json` emit concise JSON event lines for automation
+- `--once` stop after first captured event
+- `--log-jsonl captures/events.jsonl`
+- `--log-markdown captures/Results-browsercatch.md`
+
+## HTML Template Placeholders
+When using `--serve-file`, these placeholders are auto-replaced:
+- `__CALLBACK_URL__`
+- `__TOKEN__`
+- `__LISTENER_HOST__`
+- `__LISTENER_PORT__`
+
+## Example Runs
+
+### 1) Basic listener
+```bash
+python3 browsercatch.py --port 8080
+```
+
+### 2) Serve test template and stop on first callback
+```bash
+python3 browsercatch.py \
+  --port 8080 \
+  --serve-file index-interactwebhook.html \
+  --once
+```
+
+### 3) Gemini-friendly JSON output
+```bash
+python3 browsercatch.py --port 8080 --stdout-json --quiet
+```
+
+### 4) Public callback URL for remote target testing
+```bash
+python3 browsercatch.py \
+  --host 0.0.0.0 \
+  --port 8080 \
+  --public-url https://collab.example.com
+```
+
+## Logs
+By default:
+- `captures/events.jsonl` contains one JSON object per request
+- `captures/Results-browsercatch.md` keeps compact cumulative notes and run history
+
+## Notes
+- Use only on authorized targets and scopes.
+- Keep listener reachable from target infrastructure (NAT/firewall/DNS).
