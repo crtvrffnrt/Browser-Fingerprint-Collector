@@ -67,7 +67,7 @@ When using `--serve-file`, these placeholders are auto-replaced:
 python3 browsercatch.py --port 8080
 ```
 
-### 2) Serve test template and stop on first callback
+### 2) Serve test template and stop on first callback!
 ```bash
 python3 browsercatch.py \
   --port 8080 \
