@@ -14,12 +14,17 @@ It captures inbound HTTP callbacks (GET/POST/PUT/PATCH/DELETE/OPTIONS/HEAD), log
 - Tokenized callback paths (`/c/<token>` by default)
 - Structured logs:
   - JSONL event stream for automation
+  - Per-event JSON files for file watcher pipelines
+  - `latest.json` + `summary.json` snapshots for polling-based tools
   - Markdown summary with incremental run log
 - Built-in endpoints:
   - `/health` for liveness
   - `/events` for recent captured events
+  - `/latest` for the latest captured event snapshot
+  - `/summary` for run metadata and hint counters
 - Optional HTML lure/template serving with placeholder replacement
 - Single-shot mode (`--once`) for automation jobs
+- Clean one-shot `Ctrl+C` shutdown on Debian/Linux (`SIGINT`/`SIGTERM` guarded)
 
 ## Quick Start
 
@@ -48,10 +53,14 @@ python3 browsercatch.py [flags]
 - `--public-url https://your-domain.tld` printed callback base for external targets
 - `--serve-file index.html` serve a custom HTML template at `/`
 - `--static-dir .` expose files under `/static/*`
+- `--results-dir results` base folder for automation outputs
 - `--stdout-json` emit concise JSON event lines for automation
 - `--once` stop after first captured event
-- `--log-jsonl captures/events.jsonl`
-- `--log-markdown captures/Results-browsercatch.md`
+- `--log-jsonl results/events.jsonl`
+- `--log-markdown results/Results-browsercatch.md`
+- `--event-files-dir results/events`
+- `--latest-json results/latest.json`
+- `--summary-json results/summary.json`
 
 ## HTML Template Placeholders
 When using `--serve-file`, these placeholders are auto-replaced:
@@ -80,7 +89,15 @@ python3 browsercatch.py \
 python3 browsercatch.py --port 8080 --stdout-json --quiet
 ```
 
-### 4) Public callback URL for remote target testing
+### 4) Force all machine outputs into `./results` for tooling
+```bash
+python3 browsercatch.py \
+  --port 8080 \
+  --results-dir results \
+  --stdout-json
+```
+
+### 5) Public callback URL for remote target testing
 ```bash
 python3 browsercatch.py \
   --host 0.0.0.0 \
@@ -90,8 +107,11 @@ python3 browsercatch.py \
 
 ## Logs
 By default:
-- `captures/events.jsonl` contains one JSON object per request
-- `captures/Results-browsercatch.md` keeps compact cumulative notes and run history
+- `results/events.jsonl` contains one JSON object per request
+- `results/events/event-*.json` is an append-only per-event stream for file-watch automations
+- `results/latest.json` always contains the most recent event
+- `results/summary.json` tracks run stats (`event_count`, unique IPs, hint counters, paths)
+- `results/Results-browsercatch.md` keeps compact cumulative notes and run history
 
 ## Notes
 - Use only on authorized targets and scopes.
