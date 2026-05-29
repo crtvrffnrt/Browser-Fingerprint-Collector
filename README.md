@@ -1,36 +1,63 @@
 <p align="center">
-  <img src="logo.png" alt="browser.md logo" width="360">
+  <img src="logo.png" alt="Browser Fingerprint Collector" width="360">
 </p>
-# Browser Fingerprint Collector (BrowserCatch)
 
-`browsercatch.py` is a lightweight collaborator-style inbound listener designed for authorized pentesting workflows!
+# Browser Fingerprint Collector
 
-It captures inbound HTTP callbacks (GET/POST/PUT/PATCH/DELETE/OPTIONS/HEAD), logs request details, and adds quick risk hints for possible SSRF, RCE-probe, CSRF, and XSS-beacon style traffic.
+`browsercatch.py` is a lightweight collaborator-style inbound listener for authorized red-team and pentest workflows.
 
-## What This Project Is For
-- Blind callback detection during web/API pentests
-- Alternative to external collaborator services when you want a local script
-- Easy integration with Gemini CLI skills/agents
+It gives you a local, scriptable callback endpoint that captures inbound HTTP beacons, enriches them with useful fingerprint data, and writes results in formats that are easy to inspect manually or feed into automation.
 
-## Key Capabilities
-- Multi-method inbound capture
-- Tokenized callback paths (`/c/<token>` by default)
-- Structured logs:
-  - JSONL event stream for automation
-  - Per-event JSON files for file watcher pipelines
-  - `latest.json` + `summary.json` snapshots for polling-based tools
-  - Markdown summary with incremental run log
-- Built-in endpoints:
-  - `/health` for liveness
-  - `/events` for recent captured events
-  - `/latest` for the latest captured event snapshot
-  - `/summary` for run metadata and hint counters
-- Optional HTML lure/template serving with placeholder replacement
-- Live terminal mode with structured per-request reports while logs are still written
-- Built-in browser collector at `/` when no `--serve-file` is provided
-- Request enrichment with browser/OS parsing, bot/scanner heuristics, display details, WebGL, canvas, storage, plugins, touch, timezone, and media preferences when supplied by a browser beacon
-- Single-shot mode (`--once`) for automation jobs
-- Clean one-shot `Ctrl+C` shutdown on Debian/Linux (`SIGINT`/`SIGTERM` guarded)
+## At A Glance
+
+- Tokenized callback paths for blind interaction tracking
+- Support for `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, and `HEAD`
+- Structured outputs for terminals, files, and machines
+- Built-in browser collector page for richer fingerprint capture
+- Fast lifecycle endpoints for health checks and polling-based tooling
+- Designed for reversible, local-first operator workflows
+
+## What It Is Good For
+
+- Blind callback detection during web, API, and SSRF testing
+- Verifying whether a payload or lure actually reached a target browser or server
+- Collecting browser and environment hints from interactive visits
+- Replacing external collaborator services with a local listener you control
+- Producing clean evidence for later triage, reporting, or chaining
+
+## Core Capabilities
+
+### Inbound Capture
+
+- Tokenized callback routes at `/c/<token>` by default
+- Multi-method request logging
+- Query string, headers, and body capture
+- Optional request size limits for safe collection
+
+### Browser Fingerprinting
+
+- User-Agent parsing
+- Browser and OS hints
+- Client hint enrichment
+- Screen, viewport, and device metrics
+- Timezone, language, touch, plugins, WebGL, canvas, storage, and media preference signals when available
+
+### Operator Outputs
+
+- JSONL stream for automation
+- Per-event JSON files for file watchers
+- `latest.json` for polling
+- `summary.json` for run stats and hint counters
+- Markdown run log for compact human review
+- Live terminal reporting for active operator use
+
+### Built-In Endpoints
+
+- `/health` for liveness
+- `/events` for recent events
+- `/latest` for the latest event snapshot
+- `/summary` for run metadata and counters
+- `/static/*` when a static directory is configured
 
 ## Quick Start
 
@@ -39,53 +66,66 @@ cd Browser-Fingerprint-Collector
 python3 browsercatch.py --port 8080
 ```
 
-The script prints a callback URL like:
+The listener prints a callback URL similar to:
 
 ```text
 http://127.0.0.1:8080/c/<token>
 ```
 
-Opening `http://127.0.0.1:8080/` in a browser serves the built-in collector page and posts richer browser details to the tokenized callback URL.
+Open `http://127.0.0.1:8080/` in a browser to load the built-in collector page and send a richer beacon to the tokenized callback URL.
 
-## CLI Usage
+## CLI
 
 ```bash
 python3 browsercatch.py [flags]
 ```
 
 ### Common Flags
-- `--host 0.0.0.0` bind interface
-- `--port 8080` listener port
-- `--token abc123` fixed callback token (optional)
-- `--base-path /c` callback path prefix
-- `--public-url https://your-domain.tld` printed callback base for external targets
-- `--serve-file index.html` serve a custom HTML template at `/`
-- `--static-dir .` expose files under `/static/*`
-- `--results-dir results` base folder for automation outputs
-- `--stdout-json` emit concise JSON event lines for automation
-- `--live` / `--active` render every captured request as a structured terminal report
-- `--once` stop after first captured event
-- `--log-jsonl results/events.jsonl`
-- `--log-markdown results/Results-browsercatch.md`
-- `--event-files-dir results/events`
-- `--latest-json results/latest.json`
-- `--summary-json results/summary.json`
 
-## HTML Template Placeholders
-When using `--serve-file`, these placeholders are auto-replaced:
-- `__CALLBACK_URL__`
-- `__TOKEN__`
-- `__LISTENER_HOST__`
-- `__LISTENER_PORT__`
+- `--host 0.0.0.0` bind address
+- `--port 8080` listener port
+- `--token abc123` fixed callback token
+- `--token-length 14` random token length
+- `--base-path /c` callback path prefix
+- `--public-url https://your-domain.tld` external base URL for printed callback links
+- `--serve-file index.html` serve a custom HTML lure at `/`
+- `--static-dir .` expose files under `/static/*`
+- `--results-dir results` output directory
+- `--log-jsonl results/events.jsonl` JSONL event log path
+- `--log-markdown results/Results-browsercatch.md` Markdown run log path
+- `--event-files-dir results/events` per-event JSON directory
+- `--latest-json results/latest.json` latest event snapshot path
+- `--summary-json results/summary.json` run summary path
+- `--max-body 65536` max request body bytes to read per event
+- `--stdout-json` emit concise JSON event lines to stdout
+- `--live` or `--active` render structured live terminal reports
+- `--quiet` reduce default server output
+- `--once` stop after the first captured event
+
+## Output Model
+
+Every captured event can be written to multiple surfaces at once:
+
+- `results/events.jsonl` for append-only event streaming
+- `results/events/event-*.json` for per-event artifacts
+- `results/latest.json` for the most recent event snapshot
+- `results/summary.json` for totals, unique IPs, path counts, and hint counters
+- `results/Results-browsercatch.md` for compact operator notes and history
+
+This makes the tool useful both as an interactive listener and as a backend for other automation.
 
 ## Example Runs
 
-### 1) Basic listener
+### Basic Listener
+
 ```bash
 python3 browsercatch.py --port 8080
 ```
 
-### 2) Serve test template and stop on first callback!
+### One-Shot Lure
+
+Serve a custom lure and stop after the first callback:
+
 ```bash
 python3 browsercatch.py \
   --port 8080 \
@@ -93,26 +133,20 @@ python3 browsercatch.py \
   --once
 ```
 
-### 3) Gemini-friendly JSON output
+### Machine-Friendly JSON
+
 ```bash
 python3 browsercatch.py --port 8080 --stdout-json --quiet
 ```
 
-### 4) Live operator view while keeping result files
+### Live Operator View
+
 ```bash
 python3 browsercatch.py --port 8080 --live
 ```
 
-Each incoming request is printed as a separated multi-section report with source IP/port, method/path, User-Agent, parsed browser/OS, browser/client hints, bot/scanner or human-browser guess, screen resolution, browser window size, viewport, device pixel ratio, timezone, language, CPU cores, memory, touch support, plugins, MIME types, WebGL, canvas signal, storage support, media preferences, query/body data, selected headers, and the event file path. The regular JSONL, per-event JSON, latest, summary, and Markdown outputs are still written under `results/`.
+### Force All Outputs Into `./results`
 
-For richer browser fingerprint fields during manual testing, open the listener root URL in the target browser:
-
-```bash
-python3 browsercatch.py --port 8080 --live
-# then browse to http://127.0.0.1:8080/
-```
-
-### 5) Force all machine outputs into `./results` for tooling
 ```bash
 python3 browsercatch.py \
   --port 8080 \
@@ -120,7 +154,8 @@ python3 browsercatch.py \
   --stdout-json
 ```
 
-### 6) Public callback URL for remote target testing
+### Public Callback URL
+
 ```bash
 python3 browsercatch.py \
   --host 0.0.0.0 \
@@ -128,14 +163,28 @@ python3 browsercatch.py \
   --public-url https://collab.example.com
 ```
 
-## Logs
-By default:
-- `results/events.jsonl` contains one JSON object per request
-- `results/events/event-*.json` is an append-only per-event stream for file-watch automations
-- `results/latest.json` always contains the most recent event
-- `results/summary.json` tracks run stats (`event_count`, unique IPs, hint counters, paths)
-- `results/Results-browsercatch.md` keeps compact cumulative notes and run history
+## HTML Placeholders
 
-## Notes
+When you use `--serve-file`, the following placeholders are replaced automatically:
+
+- `__CALLBACK_URL__`
+- `__TOKEN__`
+- `__LISTENER_HOST__`
+- `__LISTENER_PORT__`
+
+That lets you keep lure templates static while still injecting the live listener details at runtime.
+
+## Operator Notes
+
 - Use only on authorized targets and scopes.
-- Keep listener reachable from target infrastructure (NAT/firewall/DNS).
+- Make sure the listener is reachable from the target network path.
+- If you are testing through NAT, firewall, or DNS, validate reachability before assuming a payload failed.
+- Keep the callback URL stable when you need repeatable evidence.
+
+## Project Files
+
+- `browsercatch.py` main listener and event pipeline
+- `index.html` built-in browser collector page
+- `index-interactwebhook.html` sample lure template
+- `index-teams.html` alternate template
+- `logo.png` project branding
