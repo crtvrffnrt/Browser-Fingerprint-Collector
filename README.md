@@ -1,6 +1,6 @@
 # Browser Fingerprint Collector (BrowserCatch)
 
-`browsercatch.py` is a lightweight collaborator-style inbound listener designed for authorized pentesting workflows.
+`browsercatch.py` is a lightweight collaborator-style inbound listener designed for authorized pentesting workflows!
 
 It captures inbound HTTP callbacks (GET/POST/PUT/PATCH/DELETE/OPTIONS/HEAD), logs request details, and adds quick risk hints for possible SSRF, RCE-probe, CSRF, and XSS-beacon style traffic.
 

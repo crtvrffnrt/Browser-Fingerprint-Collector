@@ -1,0 +1,13 @@
+{
+  "status": "running",
+  "run_id": "20260529-061929-dc657d",
+  "started_at": "2026-05-29T06:19:29+00:00",
+  "event_count": 0,
+  "unique_source_ips": [],
+  "hint_counts": {},
+  "callback_url": "http://127.0.0.1:80/c/7jpe3NIuggJvRO",
+  "results_dir": "results",
+  "jsonl_log": "results/events.jsonl",
+  "latest_json": "results/latest.json",
+  "event_files_dir": "results/events"
+}
