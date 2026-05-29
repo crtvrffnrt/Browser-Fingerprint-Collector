@@ -12,11 +12,35 @@
   <script>
     (async function () {
       var callback = "__CALLBACK_URL__";
+      var plugins = [];
+      try {
+        plugins = Array.prototype.slice.call(navigator.plugins || []).map(function (plugin) {
+          return plugin.name;
+        });
+      } catch (e) {}
+
       var payload = {
         source: "browser-post-test",
         userAgent: navigator.userAgent || "",
         language: navigator.language || "",
+        languages: navigator.languages || [],
+        screen: {
+          width: screen ? screen.width : null,
+          height: screen ? screen.height : null,
+          colorDepth: screen ? screen.colorDepth : null
+        },
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight
+        },
+        platform: navigator.platform || "",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
         timezoneOffset: new Date().getTimezoneOffset(),
+        hardwareConcurrency: navigator.hardwareConcurrency || null,
+        deviceMemory: navigator.deviceMemory || null,
+        maxTouchPoints: navigator.maxTouchPoints || 0,
+        webdriver: navigator.webdriver || false,
+        plugins: plugins,
         url: location.href,
         ts: Date.now()
       };

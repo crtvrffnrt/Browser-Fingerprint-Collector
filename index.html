@@ -12,11 +12,28 @@
   <script>
     (function () {
       var callback = "__CALLBACK_URL__";
+      var plugins = [];
+      try {
+        plugins = Array.prototype.slice.call(navigator.plugins || []).map(function (plugin) {
+          return plugin.name;
+        });
+      } catch (e) {}
+
       var params = new URLSearchParams({
         source: "browser-test",
         ua: navigator.userAgent || "",
-        screen: (window.innerWidth + "x" + window.innerHeight),
+        screen: ((screen && screen.width) ? screen.width : "") + "x" + ((screen && screen.height) ? screen.height : ""),
+        viewport: (window.innerWidth + "x" + window.innerHeight),
         lang: navigator.language || "",
+        languages: (navigator.languages || []).join(","),
+        platform: navigator.platform || "",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+        timezoneOffset: String(new Date().getTimezoneOffset()),
+        hardwareConcurrency: String(navigator.hardwareConcurrency || ""),
+        deviceMemory: String(navigator.deviceMemory || ""),
+        maxTouchPoints: String(navigator.maxTouchPoints || 0),
+        webdriver: String(navigator.webdriver || false),
+        plugins: plugins.join(","),
         ts: String(Date.now())
       });
 

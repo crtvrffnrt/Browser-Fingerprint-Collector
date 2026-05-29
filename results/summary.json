@@ -1,11 +1,23 @@
 {
   "status": "running",
-  "run_id": "20260529-061929-dc657d",
-  "started_at": "2026-05-29T06:19:29+00:00",
-  "event_count": 0,
-  "unique_source_ips": [],
-  "hint_counts": {},
-  "callback_url": "http://127.0.0.1:80/c/7jpe3NIuggJvRO",
+  "run_id": "20260529-065521-780147",
+  "updated_at": "2026-05-29T06:56:09+00:00",
+  "event_count": 4,
+  "unique_source_ips": [
+    "84.184.154.235"
+  ],
+  "hint_counts": {
+    "browser": 4,
+    "possible-csrf-related": 2,
+    "token-matched-callback": 2
+  },
+  "actor_counts": {
+    "browser-like human": 2,
+    "browser-like unknown": 2
+  },
+  "last_event_id": 4,
+  "last_event_file": "results/events/event-00000004.json",
+  "callback_url": "http://127.0.0.1:80/c/IytGf2Q-xfLaQE",
   "results_dir": "results",
   "jsonl_log": "results/events.jsonl",
   "latest_json": "results/latest.json",

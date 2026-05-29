@@ -1,21 +1,22 @@
 {
-  "timestamp_iso": "2026-05-29T06:56:09+00:00",
-  "timestamp_unix": 1780037769,
+  "timestamp_iso": "2026-05-29T06:55:49+00:00",
+  "timestamp_unix": 1780037749,
   "source_ip": "84.184.154.235",
-  "source_port": 64132,
+  "source_port": 63486,
   "method": "GET",
   "path": "/favicon.ico",
   "query": {},
   "headers": {
     "host": "20.218.92.202",
-    "connection": "keep-alive",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0",
-    "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-    "referer": "http://20.218.92.202/",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0",
+    "accept": "image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5",
+    "accept-language": "en-GB,en;q=0.9",
     "accept-encoding": "gzip, deflate",
-    "accept-language": "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7,en-GB;q=0.6"
+    "connection": "keep-alive",
+    "referer": "http://20.218.92.202/",
+    "priority": "u=6"
   },
-  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0",
   "token": "IytGf2Q-xfLaQE",
   "token_match": false,
   "body_preview": "",
@@ -33,13 +34,13 @@
       ]
     },
     "ua": {
-      "browser": "Edge",
-      "browser_version": "148.0.0.0",
+      "browser": "Firefox",
+      "browser_version": "151.0",
       "os": "Windows 10.0",
       "device": "desktop-or-server"
     },
     "network": {
-      "source": "84.184.154.235:64132",
+      "source": "84.184.154.235:63486",
       "host": "20.218.92.202",
       "forwarded_for": null,
       "real_ip": null,
@@ -47,7 +48,7 @@
       "origin": null
     },
     "browser": {
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0",
       "client_hints": {
         "sec_ch_ua": null,
         "platform": null,
@@ -59,7 +60,7 @@
         "platform_version": null
       },
       "ua_data": null,
-      "language": "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7,en-GB;q=0.6",
+      "language": "en-GB,en;q=0.9",
       "languages": null,
       "platform": null,
       "vendor": null,
@@ -99,7 +100,7 @@
       "extension_surface": null
     }
   },
-  "event_id": 4,
+  "event_id": 2,
   "run_id": "20260529-065521-780147",
-  "event_file": "results/events/event-00000004.json"
+  "event_file": "results/events/event-00000002.json"
 }

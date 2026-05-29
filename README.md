@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="logo.png" alt="browser.md logo" width="360">
+</p>
 # Browser Fingerprint Collector (BrowserCatch)
 
 `browsercatch.py` is a lightweight collaborator-style inbound listener designed for authorized pentesting workflows!
@@ -23,6 +26,9 @@ It captures inbound HTTP callbacks (GET/POST/PUT/PATCH/DELETE/OPTIONS/HEAD), log
   - `/latest` for the latest captured event snapshot
   - `/summary` for run metadata and hint counters
 - Optional HTML lure/template serving with placeholder replacement
+- Live terminal mode with structured per-request reports while logs are still written
+- Built-in browser collector at `/` when no `--serve-file` is provided
+- Request enrichment with browser/OS parsing, bot/scanner heuristics, display details, WebGL, canvas, storage, plugins, touch, timezone, and media preferences when supplied by a browser beacon
 - Single-shot mode (`--once`) for automation jobs
 - Clean one-shot `Ctrl+C` shutdown on Debian/Linux (`SIGINT`/`SIGTERM` guarded)
 
@@ -38,6 +44,8 @@ The script prints a callback URL like:
 ```text
 http://127.0.0.1:8080/c/<token>
 ```
+
+Opening `http://127.0.0.1:8080/` in a browser serves the built-in collector page and posts richer browser details to the tokenized callback URL.
 
 ## CLI Usage
 
@@ -55,6 +63,7 @@ python3 browsercatch.py [flags]
 - `--static-dir .` expose files under `/static/*`
 - `--results-dir results` base folder for automation outputs
 - `--stdout-json` emit concise JSON event lines for automation
+- `--live` / `--active` render every captured request as a structured terminal report
 - `--once` stop after first captured event
 - `--log-jsonl results/events.jsonl`
 - `--log-markdown results/Results-browsercatch.md`
@@ -89,7 +98,21 @@ python3 browsercatch.py \
 python3 browsercatch.py --port 8080 --stdout-json --quiet
 ```
 
-### 4) Force all machine outputs into `./results` for tooling
+### 4) Live operator view while keeping result files
+```bash
+python3 browsercatch.py --port 8080 --live
+```
+
+Each incoming request is printed as a separated multi-section report with source IP/port, method/path, User-Agent, parsed browser/OS, browser/client hints, bot/scanner or human-browser guess, screen resolution, browser window size, viewport, device pixel ratio, timezone, language, CPU cores, memory, touch support, plugins, MIME types, WebGL, canvas signal, storage support, media preferences, query/body data, selected headers, and the event file path. The regular JSONL, per-event JSON, latest, summary, and Markdown outputs are still written under `results/`.
+
+For richer browser fingerprint fields during manual testing, open the listener root URL in the target browser:
+
+```bash
+python3 browsercatch.py --port 8080 --live
+# then browse to http://127.0.0.1:8080/
+```
+
+### 5) Force all machine outputs into `./results` for tooling
 ```bash
 python3 browsercatch.py \
   --port 8080 \
@@ -97,7 +120,7 @@ python3 browsercatch.py \
   --stdout-json
 ```
 
-### 5) Public callback URL for remote target testing
+### 6) Public callback URL for remote target testing
 ```bash
 python3 browsercatch.py \
   --host 0.0.0.0 \
